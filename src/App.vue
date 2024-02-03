@@ -18,6 +18,8 @@ import Bottom from "./components/Bottom.vue";
 import Left from "./components/Left.vue";
 import Right from "./components/Right.vue";
 
+
+
 export default defineComponent({
   name: "App",
   components: {
