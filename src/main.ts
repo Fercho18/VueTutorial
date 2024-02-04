@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue'
+import mitt from 'mitt';
 //import Vue from 'vue'
 //import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 
@@ -8,7 +9,14 @@ import 'bootstrap/dist/css/bootstrap.css'
 //import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 
-createApp(App).mount('#app')
+const emitter =mitt();
+const app =createApp(App);
+app.provide('emitter',emitter);
+app.mount('#app')
+
+
+
+
 // Make BootstrapVue available throughout your project
 //App.use(BootstrapVue)
 // Optionally install the BootstrapVue icon components plugin

@@ -26,19 +26,24 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from "vue";
+<script>
+import { defineComponent, ref, inject } from "vue";
+
 
 export default defineComponent({
   setup() {
+    const emitter = inject('emitter');
     let username = ref(undefined);
     let age = ref(undefined);
 
     function InputUsername() {
-      console.log("name: " + username.value + " age: " + age.value);
+      //console.log("name: " + username.value + " age: " + age.value);
+      emitter.emit('newUser',{'name':username.value,'age':age.value});
+      username.value = undefined;
+      age.value = undefined;
     }
     function primaryClicked() {
-      console.log("Primary Clicked");
+      alert("primaryClicked");
     }
     return {
       primaryClicked,
