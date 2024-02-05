@@ -2,11 +2,12 @@
   <div class="topStyle">
     <div style="margin-left: 20%">
       <button @click="primaryClicked" style="margin: 1%; width: 15%" type="button" class="btn btn-primary">
-        Primary
+        Alert
       </button>
-      <button style="margin: 1%; width: 15%" type="button" class="btn btn-secondary">
-        Secondary
+      <button @click="showParameterPopUp = true" style="margin: 1%; width: 15%" type="button" class="btn btn-secondary">
+        Parameters
       </button>
+      <parameters v-if="showParameterPopUp" @close="closeParameters"></parameters>
       <button style="margin: 1%; width: 15%" type="button" class="btn btn-success">
         Success
       </button>
@@ -19,7 +20,8 @@
         aria-label="Recipient's username" aria-describedby="button-addon2" />
       <input type="text" class="form-control" v-model="age" placeholder="age" aria-label="Recipient's username"
         aria-describedby="button-addon2" />
-      <button @click="InputUsername" style="margin-right: 25%" class="btn btn-outline-secondary" type="button" id="button-addon2">
+      <button @click="InputUsername" style="margin-right: 25%" class="btn btn-outline-secondary" type="button"
+        id="button-addon2">
         Button
       </button>
     </div>
@@ -28,28 +30,36 @@
 
 <script>
 import { defineComponent, ref, inject } from "vue";
+import Parameters from "./Parameters.vue";
 
 
 export default defineComponent({
+  components: { Parameters },
   setup() {
     const emitter = inject('emitter');
     let username = ref(undefined);
     let age = ref(undefined);
+    let showParameterPopUp= ref(false)
 
     function InputUsername() {
       //console.log("name: " + username.value + " age: " + age.value);
-      emitter.emit('newUser',{'name':username.value,'age':age.value});
+      emitter.emit('newUser', { 'name': username.value, 'age': age.value });
       username.value = undefined;
       age.value = undefined;
     }
     function primaryClicked() {
       alert("primaryClicked");
     }
+    function closeParameters(){
+      showParameterPopUp.value=false;
+    }
     return {
       primaryClicked,
       username,
       age,
       InputUsername,
+      showParameterPopUp,
+      closeParameters
     };
   },
 });
