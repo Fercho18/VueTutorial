@@ -2,24 +2,79 @@
     <div class="popup">
         <div class="popup-inner">
             Parameters
-            <button style="width: 20%; margin-left: 10%;" @click="close" class="btn btn-danger btn-lg" >Close</button>
+            <div class="input-group flex-nowrap">
+                <span class="input-group-text" id="addon-wrapping">Name</span>
+                <input type="text" v-model="name" class="form-control" aria-label="Username"
+                    aria-describedby="addon-wrapping">
+            </div>
+            <label for="customRange1" class="form-label">Example range</label>
+            <input type="range" v-model="speed" class="form-range" id="customRange1" min="0" max="100">
+            <h3>Speed: {{ speed }}</h3>
+            <div style="display: flex">
+                <div style="width: 45%; margin: 1%">
+                    <b-card bg-variant="light">
+                        <b-form-group label="RadioButton Options:" label-align-sm="right" v-slot="{ ariaDescribedby }">
+                            <b-form-radio-group class="pt-2" :options="['Air', 'Courier', 'Mail']"
+                                :aria-describedby="ariaDescribedby" v-model="radioButtonSelected"></b-form-radio-group>
+                        </b-form-group>
+                    </b-card>
+                </div>
+                <div style="width: 45%; margin: 1%">
+                    <b-card bg-variant="light" inline>
+                        <b-form-group label="CheckBox Options:" v-slot="{ ariaDescribedby }">
+                            <b-form-checkbox-group id="checkbox-group-1" v-model="selected"
+                                :aria-describedby="ariaDescribedby" name="flavour-2" :options="checkBoxOptions" stacked>
+                            </b-form-checkbox-group>
+                        </b-form-group>
+                    </b-card>
+                </div>
+            </div><button style="width: 30%; margin-left: 20%;" @click="writeParameters" class="btn btn-success btn-lg">Send
+                Parameters</button>
+            <button style="width: 20%; margin-left: 10%;" @click="close" class="btn btn-danger btn-lg">Close</button>
         </div>
     </div>
 </template>
 
 <script lang="ts">
 
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 
 export default defineComponent({
     setup(props, context) {
 
-        function close(){
+        let speed = ref(undefined);
+        let name = ref(undefined);
+        let radioButtonSelected = ref(undefined)
+        let checkBoxOptions = ref([
+            { text: 'Orange', value: 'orange' },
+            { text: 'Apple', value: 'apple' },
+            { text: 'Pineapple', value: 'pineapple' },
+            { text: 'Grape', value: 'grape' },
+            { text: 'Otro', value: 'otro' }
+        ]);
+        let selected = ref(undefined)
+
+        function close() {
             context.emit('close')
         }
 
+        function writeParameters() {
+            console.log('name: ', name.value);
+            console.log('speed: ', speed.value);
+            console.log('radioButtonSelected: ', radioButtonSelected.value);
+            name.value = undefined;
+            speed.value = undefined;
+            radioButtonSelected.value = undefined;
+        }
+
         return {
-            close
+            close,
+            name,
+            speed,
+            writeParameters,
+            radioButtonSelected,
+            selected,
+            checkBoxOptions
         }
     }
 })
