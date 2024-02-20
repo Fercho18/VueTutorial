@@ -23,7 +23,7 @@ def SendVideoStream ():
         # Converting into encoded bytes
         jpg_as_text = base64.b64encode(buffer)
         client.publish('videoFrame', jpg_as_text)
-        time.sleep(0.01)
+        time.sleep(0.25)
 
 
 

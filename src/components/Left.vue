@@ -8,63 +8,82 @@
                 Stop video frame
             </button>
         </div>
-        <div  style ="width:70%">
-        <canvas style="margin-left:20%; width: 400px; height: 300px; border-style: solid;" id= "output"></canvas>
-        </div> 
+        <div style="display: flex;" >
+            <div style="width:70%">
+                <canvas style="margin-left:20%; width: 400px; height: 300px; border-style: solid;" id="output"></canvas>
+            </div>
+            <div class="btn-group-vertical">
 
+                <button style=" margin:1%; width: 150px;" @click="mode = 'gray'" variant="info" class="btn btn-success">
+                    Gray </button>
+                <button style="margin:1%;width:150px;" @click="mode = 'canny'" variant="success" class="btn btn-success">
+                    Canny </button>
+                <button style="margin:1%; width: 150px;" @click="mode = 'normal'" variant="warning" class="btn btn-success">
+                    Normal </button>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
-import { defineComponent, inject, onMounted } from 'vue'
+import { defineComponent, inject, onMounted, ref } from 'vue'
+import * as cv from 'opencv.js'
 
 export default defineComponent({
     setup() {
 
-        onMounted(()=>{
-            client.on('message', (topic,message)=>{
+        let mode = ref ('normal')
 
-                if(topic=='videoFrame'){
+        onMounted(() => {
+            client.on('message', (topic, message) => {
+
+                if (topic == 'videoFrame') {
                     const img = new Image();
-                    img.src = "data:image/jpg;base64,"+message;
+                    img.src = "data:image/jpg;base64," + message;
                     const canvas = document.getElementById('output');
                     const context = canvas.getContext('2d');
-                    img.onload = ()=>{
-                        context.drawImage(
-                        img,
-                        0,
-                        0,
-                        img.width,
-                        img.height,
-                        0,
-                        0,
-                        canvas.width,
-                        canvas.height
-                        );
-
+                    img.onload = () => {
+                        let dst;
+                        if (mode.value == 'normal')
+                            dst = cv.imread (img);
+                        if (mode.value == 'gray') {
+                            let mat = cv.imread (img);
+                            dst = new cv.Mat();
+                            cv.cvtColor (mat, dst, cv.COLOR_RGB2GRAY,0);
+                            mat.delete()
+                        }
+                        if (mode.value == 'canny') {
+                            let mat = cv.imread (img);
+                            dst = new cv.Mat();
+                            cv.cvtColor (mat, dst, cv.COLOR_RGB2GRAY,0);
+                            cv.Canny(mat, dst, 50, 100, 3, false);
+                            mat.delete()
+                        }
+                        cv.imshow ('output',dst);
                     }
                 }
             })
         })
-        
+
         let client = inject('mqttClient')
 
-        function startVideoFrame(){
+        function startVideoFrame() {
             client.publish("StartVideoStream")
             client.subscribe("videoFrame")
         }
 
-        function stopVideoFrame(){
+        function stopVideoFrame() {
             client.publish("StopVideoStream")
         }
 
         return {
             startVideoFrame,
-            stopVideoFrame
+            stopVideoFrame,
+            mode
         };
     },
 });
-  </script>
+</script>
 
 <style scoped>
 .leftStyle {
