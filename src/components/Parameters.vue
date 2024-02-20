@@ -59,7 +59,7 @@ export default defineComponent({
             speed.value = undefined;
         }
 
-        return 
+        return {
             close,
             name,
             speed,
@@ -68,10 +68,10 @@ export default defineComponent({
             selected,
             client,
             checkBoxOptions
-        }
-    }
-})
-</script>
+        };
+    },
+});
+  </script>
 
 
 <style scoped>
