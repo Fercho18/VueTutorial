@@ -11,7 +11,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { defineComponent, ref } from "vue";
 import Top from "./components/Top.vue";
 import Bottom from "./components/Bottom.vue";
@@ -31,6 +31,7 @@ export default defineComponent({
   setup(){
 
     let connected = ref(false);
+
     function toggle(){
       connected.value=!connected.value;
     }

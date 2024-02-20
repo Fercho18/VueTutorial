@@ -11,23 +11,7 @@
             <input type="range" v-model="speed" class="form-range" id="customRange1" min="0" max="100">
             <h3>Speed: {{ speed }}</h3>
             <div style="display: flex">
-                <div style="width: 45%; margin: 1%">
-                    <b-card bg-variant="light">
-                        <b-form-group label="RadioButton Options:" label-align-sm="right" v-slot="{ ariaDescribedby }">
-                            <b-form-radio-group class="pt-2" :options="['Air', 'Courier', 'Mail']"
-                                :aria-describedby="ariaDescribedby" v-model="radioButtonSelected"></b-form-radio-group>
-                        </b-form-group>
-                    </b-card>
-                </div>
-                <div style="width: 45%; margin: 1%">
-                    <b-card bg-variant="light" inline>
-                        <b-form-group label="CheckBox Options:" v-slot="{ ariaDescribedby }">
-                            <b-form-checkbox-group id="checkbox-group-1" v-model="selected"
-                                :aria-describedby="ariaDescribedby" name="flavour-2" :options="checkBoxOptions" stacked>
-                            </b-form-checkbox-group>
-                        </b-form-group>
-                    </b-card>
-                </div>
+               
             </div><button style="width: 30%; margin-left: 20%;" @click="writeParameters" class="btn btn-success btn-lg">Send
                 Parameters</button>
             <button style="width: 20%; margin-left: 10%;" @click="close" class="btn btn-danger btn-lg">Close</button>
@@ -35,13 +19,13 @@
     </div>
 </template>
 
-<script lang="ts">
+<script>
 
-import { defineComponent, ref } from 'vue'
+import { defineComponent, inject, ref } from 'vue'
 
 export default defineComponent({
     setup(props, context) {
-
+        let client = inject('mqttClient')
         let speed = ref(undefined);
         let name = ref(undefined);
         let radioButtonSelected = ref(undefined)
@@ -62,18 +46,27 @@ export default defineComponent({
             console.log('name: ', name.value);
             console.log('speed: ', speed.value);
             console.log('radioButtonSelected: ', radioButtonSelected.value);
+
+            radioButtonSelected.value = undefined
+
+            const parameters = {
+                name: name.value,
+                speed: speed.value
+            }
+            let message = JSON.stringify(parameters)
+            client.publish('writeParameters',message);
             name.value = undefined;
             speed.value = undefined;
-            radioButtonSelected.value = undefined;
         }
 
-        return {
+        return 
             close,
             name,
             speed,
             writeParameters,
             radioButtonSelected,
             selected,
+            client,
             checkBoxOptions
         }
     }

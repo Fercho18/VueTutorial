@@ -8,12 +8,14 @@
         Parameters
       </button>
       <parameters v-if="showParameterPopUp" @close="closeParameters"></parameters>
-      <button style="margin: 1%; width: 15%" type="button" class="btn btn-success">
-        Success
+      <button @click="getValue" style="margin: 1%; width: 15%" type="button" class="btn btn-success">
+        Get Value
       </button>
       <button style="margin: 1%; width: 15%" type="button" class="btn btn-danger">
         Danger
       </button>
+      <input style="margin-left: 25%; width: 10%;" type="text" class="form-control" v-model="value" disabled="true"
+        aria-label="Recipient's username" aria-describedby="button-addon2" />
     </div>
     <div class="input-group mb-3">
       <input style="margin-left: 25%" type="text" class="form-control" v-model="username" placeholder="username"
@@ -29,7 +31,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, inject } from "vue";
+import { defineComponent, ref, inject, onMounted } from "vue";
 import Parameters from "./Parameters.vue";
 
 
@@ -40,6 +42,22 @@ export default defineComponent({
     let username = ref(undefined);
     let age = ref(undefined);
     let showParameterPopUp= ref(false)
+    let value = ref(undefined)
+    let client = inject("mqttClient")
+    onMounted( ()=>{
+      client.on('message',(topic,message)=>{
+        if(topic=='Value'){
+          value.value=message
+        }
+      })
+    })
+
+    
+
+    function getValue(){
+      client.publish('getValue','')
+      client.subscribe('Value')
+    }
 
     function InputUsername() {
       //console.log("name: " + username.value + " age: " + age.value);
@@ -59,7 +77,10 @@ export default defineComponent({
       age,
       InputUsername,
       showParameterPopUp,
-      closeParameters
+      closeParameters,
+      getValue,
+      value,
+      client
     };
   },
 });
