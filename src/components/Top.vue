@@ -11,9 +11,11 @@
       <button @click="getValue" style="margin: 1%; width: 15%" type="button" class="btn btn-success">
         Get Value
       </button>
-      <button style="margin: 1%; width: 15%" type="button" class="btn btn-danger">
-        Danger
+      <button @click="showMap = !showMap" style="margin: 1%; width: 15%" type="button" class="btn btn-danger">
+        Show Map
       </button>
+      <Maps v-if="showMap" @close="closeMap">
+      </Maps>
       <input style="margin-left: 25%; width: 10%;" type="text" class="form-control" v-model="value" disabled="true"
         aria-label="Recipient's username" aria-describedby="button-addon2" />
     </div>
@@ -33,29 +35,31 @@
 <script>
 import { defineComponent, ref, inject, onMounted } from "vue";
 import Parameters from "./Parameters.vue";
+import Maps from "./Maps.vue";
 
 
 export default defineComponent({
-  components: { Parameters },
+  components: { Parameters, Maps },
   setup() {
     const emitter = inject('emitter');
     let username = ref(undefined);
     let age = ref(undefined);
-    let showParameterPopUp= ref(false)
+    let showParameterPopUp = ref(false)
+    let showMap = ref(false)
     let value = ref(undefined)
     let client = inject("mqttClient")
-    onMounted( ()=>{
-      client.on('message',(topic,message)=>{
-        if(topic=='Value'){
-          value.value=message
+    onMounted(() => {
+      client.on('message', (topic, message) => {
+        if (topic == 'Value') {
+          value.value = message
         }
       })
     })
 
-    
 
-    function getValue(){
-      client.publish('getValue','')
+
+    function getValue() {
+      client.publish('getValue', '')
       client.subscribe('Value')
     }
 
@@ -68,8 +72,11 @@ export default defineComponent({
     function primaryClicked() {
       alert("primaryClicked");
     }
-    function closeParameters(){
-      showParameterPopUp.value=false;
+    function closeParameters() {
+      showParameterPopUp.value = false;
+    }
+    function closeMap() {
+      showMap.value = false;
     }
     return {
       primaryClicked,
@@ -77,7 +84,9 @@ export default defineComponent({
       age,
       InputUsername,
       showParameterPopUp,
+      showMap,
       closeParameters,
+      closeMap,
       getValue,
       value,
       client
